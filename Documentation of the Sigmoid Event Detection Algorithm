@@ -1,0 +1,62 @@
+#########################################
+#										#
+#	Documentation of the 				#
+#	Sigmoid Event Detection Algorithm	#
+#										#	
+#	Mathew Teoh and Chandan Yeshwanth	#
+#	July 2015							#
+#										#
+#########################################
+
+Thank you for using the Sigmoid Event Detection Algorithm.
+
+#########################################
+
+
+-----	Sections	-----
+
+1.	Requirements
+2.	Overview of the Algorithm
+3.	Details on how to use the Algorithm
+4.	Known Issues / Work for the Future
+
+
+#########################################
+
+
+-----	1. Requirements	-----
+
+To use the sigmoid event detection, make sure you have the following installed:
+	-	MySql Community Server (server version 5.6.25 or newer should be sufficient)
+	-	Python (version 2.7.6 or newer should be sufficient)
+	-	R (version 3.2.1 or newer should be sufficient)
+
+The following are optional:
+	-	RStudio (version 0.99.447 or newer should be sufficient)
+
+
+#########################################
+
+
+-----	2. Overview of the Algorithm	-----
+
+The algorithm has three main steps, each with their own substeps:
+	I.	Preprocessing
+		i.	Retreiving english tweets from the selected time period
+		ii.	Tokenising tweets, removing stop words
+		iii.Getting IDF time series for each word
+		iv.	Removing words with small standard deviation in IDF
+	II.	Transformation to 4 tuple
+		i.	For each word, plottin IDF vs. time (optional)
+		ii. For each word / IDF series, fit a sigmoid curve with tuple of parameters (a1,a2,a3,a4)
+	III.Get event keywords and related words	
+		i.	Classify tuple as keyword / non-keyword
+		ii.	Get co-occurring keywords
+		iii.For each keyword, group it with its co-occurrences to form a detected event
+
+
+#########################################
+
+
+----- 3. Details on how to use the Algorithm	-----
+

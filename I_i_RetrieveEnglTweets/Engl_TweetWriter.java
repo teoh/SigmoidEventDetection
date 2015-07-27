@@ -99,16 +99,16 @@ public class Engl_TweetWriter {
 
         // Suppose you know (for testing purposes) the actual event that occurred in the time period over which you are searching the tweets, you can put it
         // in eventArr. If not, just specify the date in the format "YYYY_MM_DD". The nth entry in eventArr will be the directory name containing the tweets of 
-        // the nth time interval you are searching over. For example, "2015_06_09" means look at a time period within June 9 2015.
-    	  String[] eventArr = {"2015_06_09"};
+        // the nth time interval you are searching over. For example, "2015_06_01" means look at a time period within June 1 2015.
+    	  String[] eventArr = {"2015_06_01"};
 
         // The dateArr array contains the specific hour (along with specific year, month, and day) of the time period over which you are fetching English tweets.
-        // The format is "YYYY_MM_DD_HH". For example, "2015_06_09_01" means that the time interval of interest contains the first hour of June 9 2015.
-    	  String[] dateArr = {"2015_06_09_01"};
+        // The format is "YYYY_MM_DD_HH". For example, "2015_06_01_02" means that the time interval of interest contains the second hour of June 1 2015.
+    	  String[] dateArr = {"2015_06_01_02"};
 
         // What if you want your time interval to have multiple hours of tweets? Arrays hoursBefore and hoursAfter specify how many hours before and after 
         // the time specified in dateArr you would like to collect tweets. Following the example above, if you specify "1" in hoursBefore and 2 in hoursAfter,
-        // you would be collecting tweets from the hours 00:00, 01:00, 02:00, 03:00 from the date June 9 2015.
+        // you would be collecting tweets from the hours 01:00, 02:00, 03:00, 04:00 from the date June 1 2015.
         String[] hoursBefore = {"1"}
         String[] hoursAfter = {"2"}
 
@@ -119,8 +119,8 @@ public class Engl_TweetWriter {
     	  }
     	  
     	  for(int eventInd = 0; eventInd < eventArr.length; eventInd++){
-    		  final String EVENT_stem = eventArr[eventInd]; //"boston_bombing";
-      	  final String DATE_stem = dateArr[eventInd]; //"2013_04_15_22";
+    		  final String EVENT_stem = eventArr[eventInd]; 
+      	  final String DATE_stem = dateArr[eventInd]; 
         	  
 
 

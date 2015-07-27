@@ -1,27 +1,32 @@
-#########################################
-#										#
-#	Documentation of the 				#
-#	Sigmoid Event Detection Algorithm	#
-#										#	
-#	Mathew Teoh and Chandan Yeshwanth	#
-#	July 2015							#
-#										#
-#########################################
+####################################################
+										
+	Documentation of the 				
+	Sigmoid Event Detection Algorithm	
+											
+	Mathew Teoh and Chandan Yeshwanth	
+	July 2015			
+
+	https://github.com/teoh/SigmoidEventDetection
+										
+####################################################
+
 
 Thank you for using the Sigmoid Event Detection Algorithm.
 
-#########################################
+
+####################################################
 
 
 -----	Sections	-----
 
 1.	Requirements
-2.	Overview of the Algorithm
-3.	Details on how to use the Algorithm
-4.	Known Issues / Work for the Future
+2. 	Setup
+3.	Overview of the Algorithm
+4.	Details on how to use the Algorithm
+5.	Known Issues / Work for the Future
 
 
-#########################################
+####################################################
 
 
 -----	1. Requirements	-----
@@ -32,22 +37,30 @@ To use the sigmoid event detection, make sure you have the following installed:
 	-	R (version 3.2.1 or newer should be sufficient)
 
 The following are optional:
-	-	RStudio (version 0.99.447 or newer should be sufficient)
+	-	RStudio (version 0.99.447 or newer should be sufficient)*
 
 
-#########################################
+####################################################
 
 
------	2. Overview of the Algorithm	-----
+-----	2. Setup	-----
+
+After having installed the above requirements, set up a database with the name "twitter". Run "Setup/create.sql" and then "Setup/alter.sql" in that order. This will create the table where all of the English tweets will be stored.
+
+
+####################################################
+
+
+-----	3. Overview of the Algorithm	-----
 
 The algorithm has three main steps, each with their own substeps:
 	I.	Preprocessing
-		i.	Retreiving english tweets from the selected time period
+		i.	Retreiving English tweets from the selected time period
 		ii.	Tokenising tweets, removing stop words
 		iii.Getting IDF time series for each word
 		iv.	Removing words with small standard deviation in IDF
 	II.	Transformation to 4 tuple
-		i.	For each word, plottin IDF vs. time (optional)
+		i.	For each word, plotting IDF vs. time (optional)
 		ii. For each word / IDF series, fit a sigmoid curve with tuple of parameters (a1,a2,a3,a4)
 	III.Get event keywords and related words	
 		i.	Classify tuple as keyword / non-keyword
@@ -55,8 +68,36 @@ The algorithm has three main steps, each with their own substeps:
 		iii.For each keyword, group it with its co-occurrences to form a detected event
 
 
-#########################################
+####################################################
 
 
------ 3. Details on how to use the Algorithm	-----
+----- 4. Details on how to use the Algorithm	-----
 
+When excecuting these scripts, make sure that you are in the top most directory, that is the one called "SigmoidEventDetection". 
+The steps in this section will closely follow that of the algorithm overview in the previous section. The directories in SigmoidEventDetection contain either input/output data, or scripts that produce these data. The numbering of these directories will loosely follow the numbering of the algorithm overview as well. 
+
+I.i.	Getting the English tweets
+	-	Niagarino has a class that retrieves files of Twitter data from the storage and retrieves the English tweets. In order for the English tweets to be in the proper format, use the included file "I_i_RetrieveEnglTweets/Engl_TweetWriter.java" to replace the "EnglishTweetWriter.java" usually used in Niagarino.
+	-	When retrieving English tweets, you will most likely be interested in tweets that span a certain time interval. The comments in the "Engl_TweetWriter.java" file at the top of the main method describes how to set these time intervals. 
+	-	Run the "main" method in that class to generate the output for the next step. An example of such output can be found in "I_i_EnglTweet/2015_06_01_02_en.csv". For legal reasons, this file is not available on the GitHub repo.
+	-	Note that the files in the Twitter storage are named according to CET, but the times written in the files are in GMT.
+
+I.ii-iv.	Tokenising, removing stop words, computing IDF, removing small stddev
+	-	Loading the .csv files into MySql: (if you have done this already for you .csv files you can skip this)
+		-	Change the working directory to the one which contains the files outputted by step I.i. 
+		-	Run "I_ii-iv_TokeniseAndIDF/load.sh". You may need to change the MySql username and password arguments in that script.
+		-	Now your English tweets are loaded into MySql
+		-	Change the working directory back to "SigmoidEventDetection/"
+	-	Input file:
+		-	The file "I_ii-iv_TokeniseAndIDF/input" contains the input to "I_ii-iv_TokeniseAndIDF/main.py". Following the example data included, it may look like this:
+			2015_06_01_02
+			2015-06-01 01:00
+			2015-06-01 02:00
+		- 	The first line describes event name (if you are testing the algorithm), or the general name of the time period (see description in "Engl_TweetWriter.java"). In this example above, note that the first line has its time in CET. 
+		-	The second and third lines are the start and end times (respectively) of tweets in GMT
+		-	Change according to dates used in I.i., adjusting for GMT in the last two lines
+		-	Optional: Run "select count(*) from tweet_en where creation_date  between <start_date> and <end_date> group by hour(creation_date), minute(creation_date );" in MySql (e.g. <start_date> would be in the form of '2015-06-01 01:00', including quotes). MySql should report a number of rows close to the number of minutes spanning your desired time interval.
+	-	Making sure that your working directory is "SigmoidEventDetection/", run: "./I_ii-iv_TokeniseAndIDF/main.py < ./I_ii-iv_TokeniseAndIDF/input"
+	-	Details on how main.py and the other scripts in this step work can be found in the comments of these files
+	-	The output of this script will be a .csv file with a header, where each row is a word, followed by its IDF values for each minute in the specified time interval. 
+	

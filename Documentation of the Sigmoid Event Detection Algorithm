@@ -60,8 +60,7 @@ The algorithm has three main steps, each with their own substeps:
 		iii.Getting IDF time series for each word
 		iv.	Removing words with small standard deviation in IDF
 	II.	Transformation to 4 tuple
-		i.	For each word, plotting IDF vs. time (optional)
-		ii. For each word / IDF series, fit a sigmoid curve with tuple of parameters (a1,a2,a3,a4)
+		i. For each word / IDF series, fit a sigmoid curve with tuple of parameters (a1,a2,a3,a4)
 	III.Get event keywords and related words	
 		i.	Classify tuple as keyword / non-keyword
 		ii.	Get co-occurring keywords
@@ -83,7 +82,7 @@ I.i.	Getting the English tweets
 	-	Note that the files in the Twitter storage are named according to CET, but the times written in the files are in GMT.
 
 I.ii-iv.	Tokenising, removing stop words, computing IDF, removing small stddev
-	-	Loading the .csv files into MySql: (if you have done this already for you .csv files you can skip this)
+	-	loadading the .csv files into MySql: (if you have done this already for you .csv files you can skip this)
 		-	Change the working directory to the one which contains the files outputted by step I.i. 
 		-	Run "I_ii-iv_TokeniseAndIDF/load.sh". You may need to change the MySql username and password arguments in that script.
 		-	Now your English tweets are loaded into MySql
@@ -101,3 +100,14 @@ I.ii-iv.	Tokenising, removing stop words, computing IDF, removing small stddev
 	-	Details on how main.py and the other scripts in this step work can be found in the comments of these files
 	-	The output of this script will be a .csv file with a header, where each row is a word, followed by its IDF values for each minute in the specified time interval. 
 	
+II.i 	For each word / IDF series, fit a sigmoid curve with tuple of parameters (a1,a2,a3,a4)
+	-	If you are missing the package 'zoo' in R, please install that package before following the steps below.
+	-	Run the command "./II_i_FitSig/isdSeriesToTuples.r filename" to fit the curves to the IDF values for each word contained in "filename.csv"
+	-	The R script assumes your word-IDF series files are kept in "./I_ii-iv_WordsIdfSeries/" directory. This algorithm requires further development, so it does not work perfectly in all cases. Thus, the file "zayn_1d.csv" is included to show how this R script works
+	-	Output directory is "./II_i_IdfTup/"
+	-	Overall this script looks at each word and its series of IDF values, and tries to fit a sigmoid curve to it. The fitted sigmoid curve can be described with four parameters, which precisely the four numbers listed beside each word in the output file for this script.
+
+III.i 	Classify tuple as keyword / non-keyword
+	-	To train the support vector classifier, run "./III_i_ClassifTup/supportVecIDF_createMod.py". This stores the trained model in "./III_i_ClassifTup/modelInfo" based on the training data given in "./III_i_ClassifTup/modelInfo/wordIdfTuples.csv". If you have already trained the classifier, you dont need to do this again, unless you have new data to train with.
+	-	"./III_i_ClassifTup/modelInfo/wordIdfTuples.csv" stores the training data for the classifier. The first two column was used for other purposes and is not used. "a1" to "a4" are the parameters for the sigmoid curve generated in the same order as the script in II.i. "IsSigmoid" is a boolean ("TRUE" or "FALSE") that describes if the corresponding curve is the type of sigmoid curve we are looking for.
+	- 	To use the classifier, run "./III_i_ClassifTup/supportVecIDF_test filename", where "filename" is the same filename you used in step "II.i". 
